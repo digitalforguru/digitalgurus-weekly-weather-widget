@@ -3,7 +3,6 @@
 ========================= */
 const weatherWidget = document.getElementById("weatherWidget");
 const weatherIcon = document.getElementById("weatherIcon");
-const locationElement = document.getElementById("locationName");
 
 const cityInput = document.getElementById("cityInput");
 const locationPopup = document.getElementById("locationPopup");
@@ -177,7 +176,8 @@ async function getCoords(city) {
   return {
     lat: data[0].lat,
     lon: data[0].lon,
-    name: data[0].name
+    name: data[0].name,
+    state: data[0].state || data[0].country || "" // 👈 THIS LINE FIXES EVERYTHING
   };
 }
 
@@ -187,7 +187,7 @@ async function getWeeklyWeather(city) {
 
 // format nicely
 const cityName = name || city;
-const stateName = state || "";
+const stateName = state ? state.toLowerCase() : "";
 
 // inject into new layout
 const cityEl = document.getElementById("cityName");
@@ -286,7 +286,8 @@ if (iconEl) {
      
   } catch (err) {
     console.error(err);
-    locationElement.textContent = "unable to load weather";
+    const cityEl = document.getElementById("cityName");
+if (cityEl) cityEl.textContent = "unable to catch weather :(";
   }
 }
 
