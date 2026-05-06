@@ -33,6 +33,10 @@ const iconMap = {
   Rain: "https://i.pinimg.com/originals/2e/50/b8/2e50b8f6c94ecce01cbc30eb275fc6ea.gif",
   Snow: "https://i.pinimg.com/originals/6e/36/7c/6e367ce95ab109121d03f12ed7d250c8.gif",
   Thunderstorm: "https://i.pinimg.com/originals/86/5e/10/865e10e7bcc6a739e01598dfbe38e300.gif",
+  Drizzle: "https://i.pinimg.com/originals/2e/50/b8/2e50b8f6c94ecce01cbc30eb275fc6ea.gif",
+  Mist: "https://i.pinimg.com/originals/e3/9d/e9/e39de96ddbf852ed53a4e9a993550641.gif",
+  Fog: "https://i.pinimg.com/originals/e3/9d/e9/e39de96ddbf852ed53a4e9a993550641.gif",
+  Haze: "https://i.pinimg.com/originals/e3/9d/e9/e39de96ddbf852ed53a4e9a993550641.gif"
 };
 
 const cloudIconURL =
@@ -121,11 +125,14 @@ cityInput.addEventListener("keydown", (e) => {
 
     const city = cityInput.value.trim();
 
-    if (city) {
-      localStorage.setItem("userCity", city);
-      getWeeklyWeather(city);
-      locationPopup.classList.add("hidden");
-    }
+    if (!city) return;
+
+    localStorage.setItem("userCity", city);
+
+    cityInput.blur();
+    locationPopup.classList.add("hidden");
+
+    getWeeklyWeather(city);
   }
 });
 
@@ -214,7 +221,10 @@ daysArray.forEach((day, i) => {
     .toLowerCase();
 
   tempEl.textContent = `${temp}°`;
-  iconEl.src = iconMap[weather] || cloudIconURL;
+  iconEl.src = iconMap[weather] ?? cloudIconURL;
+iconEl.onerror = () => {
+  iconEl.src = cloudIconURL;
+};
 });
      
   } catch (err) {
