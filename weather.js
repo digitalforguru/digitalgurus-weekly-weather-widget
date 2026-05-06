@@ -191,13 +191,13 @@ const data = await res.json();
 const days = data.daily.time;
 const maxTemps = data.daily.temperature_2m_max;
 const codes = data.daily.weathercode;
+const now = new Date();
 
 
-// find Monday of current week
-const dayIndex = today.getDay();
+const dayIndex = now.getDay();
 const mondayOffset = dayIndex === 0 ? -6 : 1 - dayIndex;
 
-const monday = new Date(today);
+const monday = new Date(now);
 monday.setDate(today.getDate() + mondayOffset);
 monday.setHours(0, 0, 0, 0);
 const weekDates = Array.from({ length: 7 }).map((_, i) => {
@@ -225,14 +225,13 @@ document.querySelectorAll(".day").forEach(card => {
 
 // reset highlights
 cards.forEach(c => c.classList.remove("today"));
-
+const todayKey = new Date(
+  now.getFullYear(),
+  now.getMonth(),
+  now.getDate()
+).toISOString().split("T")[0];
 cards.forEach((card, i) => {
   const date = weekDates[i];
-  const today = new Date();
-  const todayKey =
-  new Date(today.getFullYear(), today.getMonth(), today.getDate())
-    .toISOString()
-    .split("T")[0];
 
   const iconEl = card.querySelector(".day-icon");
   const tempEl = card.querySelector(".day-temp");
