@@ -231,6 +231,12 @@ cards.forEach(c => c.classList.remove("today"));
 
 cards.forEach((card, i) => {
   const date = weekDates[i];
+  const today = new Date();
+  const today = new Date();
+  const todayKey =
+  new Date(today.getFullYear(), today.getMonth(), today.getDate())
+    .toISOString()
+    .split("T")[0];
 
   const iconEl = card.querySelector(".day-icon");
   const tempEl = card.querySelector(".day-temp");
@@ -239,7 +245,6 @@ cards.forEach((card, i) => {
   if (!iconEl || !tempEl || !nameEl) return;
 
   const isToday = date === todayKey;
-
   card.classList.toggle("today", isToday);
 
   const temp = maxTemps[i];
