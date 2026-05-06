@@ -18,7 +18,7 @@ const params = new URLSearchParams(window.location.search);
 const isEmbed = params.get("embed") === "true";
 
 /* =========================
-   ICONS
+   ICON MAP
 ========================= */
 const iconMap = {
   Clear: "https://i.pinimg.com/originals/09/fb/e5/09fbe54e3fdbf459e490006c56f999f9.gif",
@@ -35,12 +35,11 @@ const cloudIconURL = iconMap.Clouds;
    EMBED MODE
 ========================= */
 if (isEmbed) {
-  const builderUI = document.querySelector(".builder-ui");
-  if (builderUI) builderUI.style.display = "none";
+  document.querySelector(".builder-ui")?.style.setProperty("display", "none");
 }
 
 /* =========================
-   FONT
+   FONT SYSTEM
 ========================= */
 function applyFont(font) {
   let fontFamily = "";
@@ -57,9 +56,9 @@ fontToggle?.addEventListener("click", (e) => {
   fontOptions.classList.toggle("hidden");
 });
 
-fontChoices.forEach(option => {
-  option.addEventListener("click", () => {
-    const font = option.dataset.font;
+fontChoices.forEach(opt => {
+  opt.addEventListener("click", () => {
+    const font = opt.dataset.font;
     localStorage.setItem("userFont", font);
     applyFont(font);
     fontOptions.classList.add("hidden");
@@ -67,7 +66,7 @@ fontChoices.forEach(option => {
 });
 
 /* =========================
-   THEME
+   THEME SYSTEM
 ========================= */
 themeToggle?.addEventListener("click", () => {
   themeOptions.classList.toggle("hidden");
@@ -83,7 +82,7 @@ themeCircles.forEach(circle => {
 });
 
 /* =========================
-   LOCATION POPUP
+   LOCATION
 ========================= */
 locationBtn?.addEventListener("click", (e) => {
   e.stopPropagation();
@@ -109,7 +108,7 @@ cityInput?.addEventListener("keydown", (e) => {
 });
 
 /* =========================
-   GRID CREATION (FIX FOR YOUR ISSUE)
+   GRID SAFETY (auto-fix if missing)
 ========================= */
 function ensureGrid() {
   let grid = document.querySelector(".weekly-grid");
@@ -117,16 +116,14 @@ function ensureGrid() {
   if (!grid) {
     grid = document.createElement("div");
     grid.className = "weekly-grid";
-
-    const content = document.querySelector(".weather-content");
-    if (content) content.appendChild(grid);
+    document.querySelector(".weather-content")?.appendChild(grid);
   }
 
   return grid;
 }
 
 /* =========================
-   WEATHER
+   GEO
 ========================= */
 async function getCoords(city) {
   const res = await fetch(
@@ -144,6 +141,9 @@ async function getCoords(city) {
   };
 }
 
+/* =========================
+   WEATHER TYPE
+========================= */
 function getWeatherType(code) {
   if (code === 0) return "Clear";
   if (code <= 3) return "Clouds";
@@ -156,7 +156,7 @@ function getWeatherType(code) {
 }
 
 /* =========================
-   MAIN WEATHER RENDER
+   MAIN WEATHER
 ========================= */
 async function getWeeklyWeather(city) {
   try {
@@ -174,36 +174,31 @@ async function getWeeklyWeather(city) {
 
     const data = await res.json();
 
-    const today = new Date();
-    const dayIndex = today.getDay();
-    const mondayOffset = dayIndex === 0 ? -6 : 1 - dayIndex;
-
-    const monday = new Date(today);
-    monday.setDate(today.getDate() + mondayOffset);
-
-    const todayKey = new Date().toISOString().split("T")[0];
+    const todayIndex = 0; // 🔥 FIX: API guarantees index 0 = today
 
     for (let i = 0; i < 7; i++) {
-      const date = new Date(monday);
-      date.setDate(monday.getDate() + i);
-
-      const key = date.toISOString().split("T")[0];
+      const date = new Date();
+      date.setDate(date.getDate() + i);
 
       const temp = data.daily.temperature_2m_max[i];
       const code = data.daily.weathercode[i];
 
-      const day = document.createElement("div");
-      day.className = "day";
+      const card = document.createElement("div");
+      card.className = "day";
 
-      if (key === todayKey) day.classList.add("today");
+      if (i === todayIndex) card.classList.add("today");
 
-      day.innerHTML = `
-        <p class="day-name">${date.toLocaleDateString("en-US", { weekday: "short" }).toLowerCase()}</p>
+      card.innerHTML = `
+        <p class="day-name">${date.toLocaleDateString("en-US", {
+          weekday: "short"
+        }).toLowerCase()}</p>
+
         <img class="day-icon" src="${iconMap[getWeatherType(code)] || cloudIconURL}" />
+
         <p class="day-temp">${Math.round(temp)}°</p>
       `;
 
-      grid.appendChild(day);
+      grid.appendChild(card);
     }
 
   } catch (err) {
@@ -235,10 +230,11 @@ window.addEventListener("DOMContentLoaded", () => {
 ========================= */
 copyLinkBtn?.addEventListener("click", () => {
   const city = localStorage.getItem("userCity") || "Los Angeles";
-  const url = `${location.origin}${location.pathname}?city=${encodeURIComponent(city)}&embed=true`;
+  const url = `${location.origin}${location.pathname}?city=${encodeURIComponent(
+    city
+  )}&embed=true`;
 
   navigator.clipboard.writeText(url);
 
-  const msg = document.getElementById("copyMessage");
-  if (msg) msg.classList.add("show");
+  document.getElementById("copyMessage")?.classList.add("show");
 });
