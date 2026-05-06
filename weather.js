@@ -203,16 +203,19 @@ data.list.forEach(item => {
   dailyMap[date].push(item);
 });
 
-const daysArray = Object.keys(dailyMap)
-  .filter(date => dailyMap[date]?.length >= 3) // ensures real usable data
-  .sort((a, b) => new Date(a) - new Date(b))
+const daysArray = Object.entries(dailyMap)
+  .filter(([date, entries]) => entries?.length >= 2)
+  .sort((a, b) => new Date(a[0]) - new Date(b[0]))
+  .map(([date]) => date)
   .slice(0, 7);
 
 daysArray.forEach((day, i) => {
   const entries = dailyMap[day];
-
+   
   const midday =
-  entries.find(e => e.weather?.[0]) || entries[0];
+     entries.find(e => e.dt_txt.includes("12:00:00")) ||
+     entries[Math.floor(entries.length / 2)] ||
+     entries[0];
 
   const weather = midday.weather[0].main;
   const temp = Math.round(midday.main.temp);
@@ -227,13 +230,14 @@ if (!iconEl) return;
     .toLowerCase();
 
   tempEl.textContent = `${temp}°`;
-  const icon = iconMap[weather];
+  const icon = iconMap[weather] || cloudIconURL;
 
-iconEl.src = icon || cloudIconURL;
-
-iconEl.onerror = () => {
-  iconEl.src = cloudIconURL;
-};
+if (iconEl) {
+  iconEl.src = icon;
+  iconEl.onerror = () => {
+    iconEl.src = cloudIconURL;
+  };
+}
 });
      
   } catch (err) {
