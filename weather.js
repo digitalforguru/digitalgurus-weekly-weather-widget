@@ -204,18 +204,21 @@ data.list.forEach(item => {
 });
 
 const daysArray = Object.keys(dailyMap)
+  .filter(date => dailyMap[date]?.length >= 3) // ensures real usable data
   .sort((a, b) => new Date(a) - new Date(b))
   .slice(0, 7);
 
 daysArray.forEach((day, i) => {
   const entries = dailyMap[day];
 
-  const midday = entries[Math.floor(entries.length / 2)];
+  const midday =
+  entries.find(e => e.weather?.[0]) || entries[0];
 
   const weather = midday.weather[0].main;
   const temp = Math.round(midday.main.temp);
 
   const iconEl = document.querySelectorAll(".day-icon")[i];
+if (!iconEl) return;
   const tempEl = document.querySelectorAll(".day-temp")[i];
   const nameEl = document.querySelectorAll(".day-name")[i];
 
