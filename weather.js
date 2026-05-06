@@ -219,7 +219,6 @@ daysArray.forEach((dayObj, i) => {
   entries.find(e => e.dt_txt.includes("12:00:00")) ||
   entries[0];
    
-  const weather = midday.weather[0].main.trim();
   const temp = Math.round(midday.main.temp);
 
   const iconEl = document.querySelectorAll(".day-icon")[i];
