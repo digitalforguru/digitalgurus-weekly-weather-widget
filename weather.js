@@ -230,7 +230,6 @@ document.querySelectorAll(".day").forEach(card => {
 cards.forEach(c => c.classList.remove("today"));
 
 cards.forEach((card, i) => {
-
   const date = weekDates[i];
 
   const iconEl = card.querySelector(".day-icon");
@@ -241,34 +240,31 @@ cards.forEach((card, i) => {
 
   const isToday = date === todayKey;
 
-  if (isToday) {
-    card.classList.add("today");
-  }
+  card.classList.toggle("today", isToday);
 
+  const temp = maxTemps[i];
+  const code = codes[i];
+
+  const weatherType = getWeatherType(code);
+  const icon = iconMap[weatherType] ?? cloudIconURL;
+
+  iconEl.src = icon;
+  tempEl.textContent = `${Math.round(temp)}°`;
+
+  nameEl.textContent = new Date(date)
+    .toLocaleDateString("en-US", { weekday: "short" })
+    .toLowerCase();
+});
+    
   // find matching API data
-  const apiIndex = days.indexOf(date);
-
-  const temp = apiIndex !== -1 ? Math.round(maxTemps[apiIndex]) : "--";
-  const code = apiIndex !== -1 ? codes[apiIndex] : 0;
+  const temp = maxTemps[i];
+  const code = codes[i];
 
   const weatherType = getWeatherType(code);
   const icon = iconMap[weatherType] ?? cloudIconURL;
 
   iconEl.src = icon;
   tempEl.textContent = temp === "--" ? "--" : `${temp}°`;
-
-  nameEl.textContent = new Date(date)
-    .toLocaleDateString("en-US", { weekday: "short" })
-    .toLowerCase();
-});
-
-  const weatherType = getWeatherType(codes[i]);
-  const icon = iconMap[weatherType] ?? cloudIconURL;
-
-  iconEl.src = icon;
-
-  const temp = Math.round(maxTemps[i]);
-  tempEl.textContent = `${temp}°`;
 
   nameEl.textContent = new Date(date)
     .toLocaleDateString("en-US", { weekday: "short" })
