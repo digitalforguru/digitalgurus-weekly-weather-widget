@@ -183,7 +183,8 @@ async function getCoords(city) {
 
 async function getWeeklyWeather(city) {
   try {
-    const { lat, lon, name } = await getCoords(city);
+    const { lat, lon } = await getCoords(city);
+    locationElement.textContent = city.toLowerCase();
 
     const url = `https://api.openweathermap.org/data/2.5/forecast?q=${city}&units=imperial&appid=${apiKey}`;
      
@@ -202,7 +203,9 @@ data.list.forEach(item => {
   dailyMap[date].push(item);
 });
 
-const daysArray = Object.keys(dailyMap).slice(0, 7);
+const daysArray = Object.keys(dailyMap)
+  .sort((a, b) => new Date(a) - new Date(b))
+  .slice(0, 7);
 
 daysArray.forEach((day, i) => {
   const entries = dailyMap[day];
@@ -221,7 +224,10 @@ daysArray.forEach((day, i) => {
     .toLowerCase();
 
   tempEl.textContent = `${temp}°`;
-  iconEl.src = iconMap[weather] ?? cloudIconURL;
+  const icon = iconMap[weather];
+
+iconEl.src = icon || cloudIconURL;
+
 iconEl.onerror = () => {
   iconEl.src = cloudIconURL;
 };
