@@ -1,6 +1,3 @@
-/* =========================
-   🌤️ ELEMENTS
-========================= */
 const weatherWidget = document.getElementById("weatherWidget");
 const weatherIcon = document.getElementById("weatherIcon");
 
@@ -20,12 +17,6 @@ const copyLinkBtn = document.getElementById("copyLinkBtn");
 
 const params = new URLSearchParams(window.location.search);
 const isEmbed = params.get("embed") === "true";
-
-const apiKey = "8b38a4d3d6920110547bdaef3d73c0ba";
-
-/* =========================
-   🎨 ICONS
-========================= */
 const iconMap = {
   Clear: "https://i.pinimg.com/originals/09/fb/e5/09fbe54e3fdbf459e490006c56f999f9.gif",
   Clouds: "https://i.pinimg.com/originals/e3/9d/e9/e39de96ddbf852ed53a4e9a993550641.gif",
@@ -41,17 +32,11 @@ const iconMap = {
 const cloudIconURL =
   "https://i.pinimg.com/originals/e3/9d/e9/e39de96ddbf852ed53a4e9a993550641.gif";
 
-/* =========================
-   🚫 EMBED MODE
-========================= */
 if (isEmbed) {
   const builderUI = document.querySelector(".builder-ui");
   if (builderUI) builderUI.style.display = "none";
 }
 
-/* =========================
-   🔗 COPY LINK SYSTEM
-========================= */
 function buildWidgetURL(city, theme, font) {
   const base = window.location.origin + window.location.pathname;
   return `${base}?city=${encodeURIComponent(city)}&theme=${theme}&font=${font}&embed=true`;
@@ -217,6 +202,10 @@ function getWeatherType(code) {
 }
 
 const todayKey = new Date().toISOString().split("T")[0];
+
+document.querySelectorAll(".day").forEach(card => {
+  card.classList.remove("today");
+});
 
 days.forEach((date, i) => {
   const iconEl = document.querySelectorAll(".day-icon")[i];
