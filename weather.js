@@ -151,18 +151,20 @@ themeCircles.forEach(circle => {
    🌍 GEO + WEATHER
 ========================= */
 async function getCoords(city) {
-  const geoURL = `https://api.openweathermap.org/geo/1.0/direct?q=${city}&limit=1&appid=${apiKey}`;
+  const geoURL = `https://geocoding-api.open-meteo.com/v1/search?name=${city}&count=1`;
 
   const res = await fetch(geoURL);
   const data = await res.json();
 
-  if (!data[0]) throw new Error("city not found");
+  if (!data.results || !data.results[0]) {
+    throw new Error("city not found");
+  }
 
   return {
-    lat: data[0].lat,
-    lon: data[0].lon,
-    name: data[0].name,
-    state: data[0].state || data[0].country || "" // 👈 THIS LINE FIXES EVERYTHING
+    lat: data.results[0].latitude,
+    lon: data.results[0].longitude,
+    name: data.results[0].name,
+    state: data.results[0].admin1 || data.results[0].country || ""
   };
 }
 
