@@ -1,4 +1,3 @@
-window.__TEST_TODAY_INDEX__ = null;
 const weatherWidget = document.getElementById("weatherWidget");
 
 const cityInput = document.getElementById("cityInput");
@@ -14,6 +13,8 @@ const fontOptions = document.getElementById("fontOptions");
 const fontChoices = document.querySelectorAll(".font-option");
 
 const copyLinkBtn = document.getElementById("copyLinkBtn");
+
+const liveDateEl = document.getElementById("liveDate");
 
 const params = new URLSearchParams(window.location.search);
 const isEmbed = params.get("embed") === "true";
@@ -38,6 +39,24 @@ const cloudIconURL = iconMap.Clouds;
 if (isEmbed) {
   document.querySelector(".builder-ui")?.style.setProperty("display", "none");
 }
+
+/* =========================
+   LIVE DATE HEADER
+========================= */
+function updateLiveDate() {
+  if (!liveDateEl) return;
+
+  const now = new Date();
+
+  liveDateEl.textContent = now.toLocaleDateString("en-US", {
+    weekday: "short",
+    month: "short",
+    day: "numeric"
+  });
+}
+
+updateLiveDate();
+setInterval(updateLiveDate, 60000);
 
 /* =========================
    FONT SYSTEM
@@ -83,7 +102,7 @@ themeCircles.forEach(circle => {
 });
 
 /* =========================
-   LOCATION
+   LOCATION POPUP
 ========================= */
 locationBtn?.addEventListener("click", (e) => {
   e.stopPropagation();
@@ -107,21 +126,6 @@ cityInput?.addEventListener("keydown", (e) => {
     getWeeklyWeather(city);
   }
 });
-
-/* =========================
-   GRID SAFETY (auto-fix if missing)
-========================= */
-function ensureGrid() {
-  let grid = document.querySelector(".weekly-grid");
-
-  if (!grid) {
-    grid = document.createElement("div");
-    grid.className = "weekly-grid";
-    document.querySelector(".weather-content")?.appendChild(grid);
-  }
-
-  return grid;
-}
 
 /* =========================
    GEO
@@ -161,24 +165,23 @@ function getWeatherType(code) {
 ========================= */
 async function getWeeklyWeather(city) {
   try {
-    const grid = ensureGrid();
-    grid.innerHTML = "";
-
     const { lat, lon, name, state } = await getCoords(city);
 
     document.getElementById("cityName").textContent = name;
     document.getElementById("stateName").textContent = (state || "").toLowerCase();
 
     const res = await fetch(
-      `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=temperature_2m_max,weathercode&timezone=auto`
+      `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=temperature_2m_max,weathercode&temperature_unit=fahrenheit&timezone=auto`
     );
 
     const data = await res.json();
 
-   const todayIndex =
-  window.__TEST_TODAY_INDEX__ !== null
-    ? window.__TEST_TODAY_INDEX__
-    : 0;
+    const grid = document.querySelector(".weekly-grid");
+    if (!grid) return;
+
+    grid.innerHTML = "";
+
+    const todayIndex = 0;
 
     for (let i = 0; i < 7; i++) {
       const date = new Date();
@@ -193,9 +196,9 @@ async function getWeeklyWeather(city) {
       if (i === todayIndex) card.classList.add("today");
 
       card.innerHTML = `
-        <p class="day-name">${date.toLocaleDateString("en-US", {
-          weekday: "short"
-        }).toLowerCase()}</p>
+        <p class="day-name">
+          ${date.toLocaleDateString("en-US", { weekday: "short" }).toLowerCase()}
+        </p>
 
         <img class="day-icon" src="${iconMap[getWeatherType(code)] || cloudIconURL}" />
 
@@ -207,7 +210,7 @@ async function getWeeklyWeather(city) {
 
   } catch (err) {
     console.error(err);
-    document.getElementById("cityName").textContent = "weather broke :(";
+    document.getElementById("cityName").textContent = "weather unavailable";
   }
 }
 
@@ -234,6 +237,7 @@ window.addEventListener("DOMContentLoaded", () => {
 ========================= */
 copyLinkBtn?.addEventListener("click", () => {
   const city = localStorage.getItem("userCity") || "Los Angeles";
+
   const url = `${location.origin}${location.pathname}?city=${encodeURIComponent(
     city
   )}&embed=true`;
