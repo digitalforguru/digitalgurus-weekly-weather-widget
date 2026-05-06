@@ -193,7 +193,6 @@ const maxTemps = data.daily.temperature_2m_max;
 const codes = data.daily.weathercode;
 const now = new Date();
 
-
 const dayIndex = now.getDay();
 const mondayOffset = dayIndex === 0 ? -6 : 1 - dayIndex;
 
