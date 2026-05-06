@@ -216,8 +216,7 @@ daysArray.forEach((day, i) => {
   tempEl.textContent = `${temp}°`;
   iconEl.src = iconMap[weather] || cloudIconURL;
 });
-    });
-
+     
   } catch (err) {
     console.error(err);
     locationElement.textContent = "unable to load weather";
