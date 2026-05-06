@@ -229,7 +229,6 @@ cards.forEach(c => c.classList.remove("today"));
 cards.forEach((card, i) => {
   const date = weekDates[i];
   const today = new Date();
-  const today = new Date();
   const todayKey =
   new Date(today.getFullYear(), today.getMonth(), today.getDate())
     .toISOString()
