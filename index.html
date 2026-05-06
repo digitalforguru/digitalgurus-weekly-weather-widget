@@ -1,1 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>DigitalGuru's Weekly Weather Widget</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
 
+<body>
+
+<div class="builder-ui">
+
+  <!-- HEADER -->
+  <div class="widget-header">
+    DigitalGuru's Weekly Weather Widget
+  </div>
+
+  <!-- THEME OPTIONS (MATCHES YOUR OTHER WIDGET STYLE) -->
+  <div id="themeOptions" class="theme-options hidden">
+    <div class="themes-row">
+      <div class="theme-circle pink" data-theme="pink"></div>
+      <div class="theme-circle beige" data-theme="beige"></div>
+      <div class="theme-circle blue" data-theme="blue"></div>
+      <div class="theme-circle green" data-theme="green"></div>
+    </div>
+  </div>
+
+  <!-- FONT OPTIONS -->
+  <div id="fontOptions" class="theme-options hidden">
+    <div class="font-option" data-font="default">default</div>
+    <div class="font-option" data-font="serif">serif</div>
+    <div class="font-option" data-font="mono">mono</div>
+  </div>
+
+  <!-- TIP -->
+  <div id="usageTip" class="usage-tip">
+    Welcome to your Notion widget by DigitalGuru!<br>
+    view your weekly forecast in a soft aesthetic layout<br>
+    - click options to customize<br>
+    - copy your embed link<br>
+    - paste into Notion ✧
+  </div>
+
+  <!-- CONTROLS -->
+  <div class="top-left-controls">
+
+    <div id="locationBtn" class="btn location-btn" title="type location">
+      📍
+    </div>
+
+    <div id="themeToggle" class="btn theme-toggle-btn" title="select theme"></div>
+
+    <div id="fontToggle" class="btn font-toggle-btn" title="font">Aa</div>
+
+    <!-- LOCATION POPUP -->
+    <div id="locationPopup" class="location-popup hidden">
+      <div class="location-title">type your city</div>
+      <input id="cityInput" class="city-input" placeholder="e.g. london, tokyo, la" />
+    </div>
+
+  </div>
+
+  <!-- COPY BUTTON -->
+  <div class="setup-area">
+    <button id="copyLinkBtn" class="copy-btn">
+      copy my embed Notion link .ᐟ.ᐟ
+    </button>
+
+    <p id="copyMessage" class="copy-message hidden">
+      copied! paste into notion .ᐟ.ᐟ
+    </p>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer-links">
+    <a href="https://stan.store/digitalforguru" target="_blank" class="footer-link">
+      shop digitalguru
+    </a>
+
+    <span class="divider">•</span>
+
+    <a href="https://tiktok.com/@digitaluru" target="_blank" class="footer-link">
+      socials
+    </a>
+  </div>
+
+</div>
+
+<!-- 🌤️ WEEKLY WEATHER WIDGET -->
+<div id="weatherWidget" class="widget pink weekly-widget">
+
+  <div class="weather-content">
+
+    <p id="locationName">los angeles</p>
+
+    <!-- WEEK GRID -->
+    <div class="weekly-grid">
+
+      <div class="day">
+        <p class="day-name">mon</p>
+        <img class="day-icon" />
+        <p class="day-temp">72°</p>
+      </div>
+
+      <div class="day">
+        <p class="day-name">tue</p>
+        <img class="day-icon" />
+        <p class="day-temp">70°</p>
+      </div>
+
+      <div class="day">
+        <p class="day-name">wed</p>
+        <img class="day-icon" />
+        <p class="day-temp">68°</p>
+      </div>
+
+      <div class="day">
+        <p class="day-name">thu</p>
+        <img class="day-icon" />
+        <p class="day-temp">74°</p>
+      </div>
+
+      <div class="day">
+        <p class="day-name">fri</p>
+        <img class="day-icon" />
+        <p class="day-temp">71°</p>
+      </div>
+
+      <div class="day">
+        <p class="day-name">sat</p>
+        <img class="day-icon" />
+        <p class="day-temp">69°</p>
+      </div>
+
+      <div class="day">
+        <p class="day-name">sun</p>
+        <img class="day-icon" />
+        <p class="day-temp">73°</p>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+<script src="weather.js"></script>
+
+</body>
+</html>
