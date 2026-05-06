@@ -1,4 +1,5 @@
 const weatherWidget = document.getElementById("weatherWidget");
+
 const cityInput = document.getElementById("cityInput");
 const locationPopup = document.getElementById("locationPopup");
 const locationBtn = document.getElementById("locationBtn");
@@ -16,20 +17,19 @@ const copyLinkBtn = document.getElementById("copyLinkBtn");
 const params = new URLSearchParams(window.location.search);
 const isEmbed = params.get("embed") === "true";
 
+/* =========================
+   ICONS
+========================= */
 const iconMap = {
   Clear: "https://i.pinimg.com/originals/09/fb/e5/09fbe54e3fdbf459e490006c56f999f9.gif",
   Clouds: "https://i.pinimg.com/originals/e3/9d/e9/e39de96ddbf852ed53a4e9a993550641.gif",
   Rain: "https://i.pinimg.com/originals/2e/50/b8/2e50b8f6c94ecce01cbc30eb275fc6ea.gif",
   Snow: "https://i.pinimg.com/originals/6e/36/7c/6e367ce95ab109121d03f12ed7d250c8.gif",
   Thunderstorm: "https://i.pinimg.com/originals/86/5e/10/865e10e7bcc6a739e01598dfbe38e300.gif",
-  Drizzle: "https://i.pinimg.com/originals/2e/50/b8/2e50b8f6c94ecce01cbc30eb275fc6ea.gif",
-  Mist: "https://i.pinimg.com/originals/e3/9d/e9/e39de96ddbf852ed53a4e9a993550641.gif",
-  Fog: "https://i.pinimg.com/originals/e3/9d/e9/e39de96ddbf852ed53a4e9a993550641.gif",
-  Haze: "https://i.pinimg.com/originals/e3/9d/e9/e39de96ddbf852ed53a4e9a993550641.gif"
+  Fog: "https://i.pinimg.com/originals/e3/9d/e9/e39de96ddbf852ed53a4e9a993550641.gif"
 };
 
-const cloudIconURL =
-  "https://i.pinimg.com/originals/e3/9d/e9/e39de96ddbf852ed53a4e9a993550641.gif";
+const cloudIconURL = iconMap.Clouds;
 
 /* =========================
    EMBED MODE
@@ -42,7 +42,17 @@ if (isEmbed) {
 /* =========================
    FONT
 ========================= */
-fontToggle.addEventListener("click", (e) => {
+function applyFont(font) {
+  let fontFamily = "";
+
+  if (font === "serif") fontFamily = "Georgia, serif";
+  else if (font === "mono") fontFamily = "ui-monospace, monospace";
+  else fontFamily = "'Satoshi', sans-serif";
+
+  weatherWidget.style.fontFamily = fontFamily;
+}
+
+fontToggle?.addEventListener("click", (e) => {
   e.stopPropagation();
   fontOptions.classList.toggle("hidden");
 });
@@ -56,47 +66,10 @@ fontChoices.forEach(option => {
   });
 });
 
-function applyFont(font) {
-  const map = {
-    serif: "Georgia, serif",
-    mono: "ui-monospace, SFMono-Regular, Menlo, monospace",
-    default: "'Satoshi', sans-serif"
-  };
-
-  weatherWidget.style.fontFamily = map[font] || map.default;
-}
-
-/* =========================
-   LOCATION POPUP
-========================= */
-locationBtn.addEventListener("click", (e) => {
-  e.stopPropagation();
-  locationPopup.classList.toggle("hidden");
-  if (!locationPopup.classList.contains("hidden")) cityInput.focus();
-});
-
-cityInput.addEventListener("keydown", (e) => {
-  if (e.key === "Enter") {
-    const city = cityInput.value.trim();
-    if (!city) return;
-
-    localStorage.setItem("userCity", city);
-    locationPopup.classList.add("hidden");
-
-    getWeeklyWeather(city);
-  }
-});
-
-document.addEventListener("click", (e) => {
-  if (!locationPopup.contains(e.target) && !locationBtn.contains(e.target)) {
-    locationPopup.classList.add("hidden");
-  }
-});
-
 /* =========================
    THEME
 ========================= */
-themeToggle.addEventListener("click", () => {
+themeToggle?.addEventListener("click", () => {
   themeOptions.classList.toggle("hidden");
 });
 
@@ -110,7 +83,50 @@ themeCircles.forEach(circle => {
 });
 
 /* =========================
-   GEO
+   LOCATION POPUP
+========================= */
+locationBtn?.addEventListener("click", (e) => {
+  e.stopPropagation();
+  locationPopup.classList.toggle("hidden");
+  if (!locationPopup.classList.contains("hidden")) cityInput?.focus();
+});
+
+document.addEventListener("click", (e) => {
+  if (!locationPopup?.contains(e.target) && !locationBtn?.contains(e.target)) {
+    locationPopup?.classList.add("hidden");
+  }
+});
+
+cityInput?.addEventListener("keydown", (e) => {
+  if (e.key === "Enter") {
+    const city = cityInput.value.trim();
+    if (!city) return;
+
+    localStorage.setItem("userCity", city);
+    locationPopup.classList.add("hidden");
+    getWeeklyWeather(city);
+  }
+});
+
+/* =========================
+   GRID CREATION (FIX FOR YOUR ISSUE)
+========================= */
+function ensureGrid() {
+  let grid = document.querySelector(".weekly-grid");
+
+  if (!grid) {
+    grid = document.createElement("div");
+    grid.className = "weekly-grid";
+
+    const content = document.querySelector(".weather-content");
+    if (content) content.appendChild(grid);
+  }
+
+  return grid;
+}
+
+/* =========================
+   WEATHER
 ========================= */
 async function getCoords(city) {
   const res = await fetch(
@@ -128,37 +144,28 @@ async function getCoords(city) {
   };
 }
 
-/* =========================
-   CREATE UI (IMPORTANT FIX)
-========================= */
-function buildWeekUI() {
-  const grid = document.querySelector(".weekly-grid");
-  grid.innerHTML = ""; // wipe static content
-
-  const days = ["mon","tue","wed","thu","fri","sat","sun"];
-
-  days.forEach(day => {
-    const card = document.createElement("div");
-    card.className = "day";
-
-    card.innerHTML = `
-      <p class="day-name">${day}</p>
-      <img class="day-icon" />
-      <p class="day-temp">--°</p>
-    `;
-
-    grid.appendChild(card);
-  });
+function getWeatherType(code) {
+  if (code === 0) return "Clear";
+  if (code <= 3) return "Clouds";
+  if (code <= 48) return "Fog";
+  if (code <= 67) return "Rain";
+  if (code <= 77) return "Snow";
+  if (code <= 82) return "Rain";
+  if (code <= 86) return "Snow";
+  return "Thunderstorm";
 }
 
 /* =========================
-   WEATHER
+   MAIN WEATHER RENDER
 ========================= */
 async function getWeeklyWeather(city) {
   try {
+    const grid = ensureGrid();
+    grid.innerHTML = "";
+
     const { lat, lon, name, state } = await getCoords(city);
 
-    document.getElementById("cityName").textContent = name || city;
+    document.getElementById("cityName").textContent = name;
     document.getElementById("stateName").textContent = (state || "").toLowerCase();
 
     const res = await fetch(
@@ -167,47 +174,41 @@ async function getWeeklyWeather(city) {
 
     const data = await res.json();
 
-    const maxTemps = data.daily.temperature_2m_max;
-    const codes = data.daily.weathercode;
+    const today = new Date();
+    const dayIndex = today.getDay();
+    const mondayOffset = dayIndex === 0 ? -6 : 1 - dayIndex;
 
-    const cards = document.querySelectorAll(".day");
+    const monday = new Date(today);
+    monday.setDate(today.getDate() + mondayOffset);
 
-    const today = new Date().toISOString().split("T")[0];
+    const todayKey = new Date().toISOString().split("T")[0];
 
-    const monday = new Date();
-    const offset = (monday.getDay() + 6) % 7;
-    monday.setDate(monday.getDate() - offset);
+    for (let i = 0; i < 7; i++) {
+      const date = new Date(monday);
+      date.setDate(monday.getDate() + i);
 
-    const weekDates = Array.from({ length: 7 }).map((_, i) => {
-      const d = new Date(monday);
-      d.setDate(monday.getDate() + i);
-      return d.toISOString().split("T")[0];
-    });
+      const key = date.toISOString().split("T")[0];
 
-    function type(code) {
-      if (code === 0) return "Clear";
-      if (code <= 3) return "Clouds";
-      if (code <= 48) return "Fog";
-      if (code <= 67) return "Rain";
-      if (code <= 77) return "Snow";
-      return "Thunderstorm";
+      const temp = data.daily.temperature_2m_max[i];
+      const code = data.daily.weathercode[i];
+
+      const day = document.createElement("div");
+      day.className = "day";
+
+      if (key === todayKey) day.classList.add("today");
+
+      day.innerHTML = `
+        <p class="day-name">${date.toLocaleDateString("en-US", { weekday: "short" }).toLowerCase()}</p>
+        <img class="day-icon" src="${iconMap[getWeatherType(code)] || cloudIconURL}" />
+        <p class="day-temp">${Math.round(temp)}°</p>
+      `;
+
+      grid.appendChild(day);
     }
 
-    cards.forEach((card, i) => {
-      const icon = card.querySelector(".day-icon");
-      const temp = card.querySelector(".day-temp");
-
-      const weatherType = type(codes[i]);
-      icon.src = iconMap[weatherType] || cloudIconURL;
-
-      temp.textContent = `${Math.round(maxTemps[i])}°`;
-
-      card.classList.toggle("today", weekDates[i] === today);
-    });
-
-  } catch (e) {
-    console.error(e);
-    document.getElementById("cityName").textContent = "error loading weather";
+  } catch (err) {
+    console.error(err);
+    document.getElementById("cityName").textContent = "weather broke :(";
   }
 }
 
@@ -215,17 +216,29 @@ async function getWeeklyWeather(city) {
    INIT
 ========================= */
 window.addEventListener("DOMContentLoaded", () => {
-  buildWeekUI();
-
   const city =
     new URLSearchParams(window.location.search).get("city") ||
     localStorage.getItem("userCity") ||
     "Los Angeles";
 
-  weatherWidget.className =
-    `widget ${localStorage.getItem("userTheme") || "pink"} weekly-widget`;
+  const theme = localStorage.getItem("userTheme") || "pink";
+  const font = localStorage.getItem("userFont") || "default";
 
-  applyFont(localStorage.getItem("userFont") || "default");
+  weatherWidget.className = `widget ${theme} weekly-widget`;
 
+  applyFont(font);
   getWeeklyWeather(city);
+});
+
+/* =========================
+   COPY LINK
+========================= */
+copyLinkBtn?.addEventListener("click", () => {
+  const city = localStorage.getItem("userCity") || "Los Angeles";
+  const url = `${location.origin}${location.pathname}?city=${encodeURIComponent(city)}&embed=true`;
+
+  navigator.clipboard.writeText(url);
+
+  const msg = document.getElementById("copyMessage");
+  if (msg) msg.classList.add("show");
 });
