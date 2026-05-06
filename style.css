@@ -546,3 +546,8 @@ body {
   width: 18px;
   height: 18px;
 }
+.today {
+  border: 2px solid rgba(255, 255, 255, 0.6);
+  transform: scale(1.03);
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+}
