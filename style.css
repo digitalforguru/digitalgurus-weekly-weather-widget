@@ -606,3 +606,15 @@ body {
   margin-bottom: 6px;
   letter-spacing: 0.5px;
 }
+
+.copy-message.hidden {
+  opacity: 0;
+  transform: translateY(-4px);
+  pointer-events: none;
+}
+
+.copy-message.show {
+  opacity: 1;
+  transform: translateY(0);
+  transition: 0.25s ease;
+}
