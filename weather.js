@@ -203,17 +203,31 @@ data.list.forEach(item => {
   dailyMap[date].push(item);
 });
 
-const daysArray = Object.entries(dailyMap)
-  .sort((a, b) => new Date(a[0]) - new Date(b[0]))
-  .map(([date, entries]) => ({
-    date,
-    entries
-  }))
-  .slice(0, 7);
+const today = new Date();
+today.setHours(0, 0, 0, 0);
+
+// get Sunday of current week
+const sunday = new Date(today);
+sunday.setDate(today.getDate() - today.getDay());
+
+const daysArray = Array.from({ length: 7 }).map((_, i) => {
+  const date = new Date(sunday);
+  date.setDate(sunday.getDate() + i);
+
+  const key = date.toISOString().split("T")[0];
+
+  return {
+    date: key,
+    entries: dailyMap[key] || []
+  };
+});
 
 daysArray.forEach((dayObj, i) => {
   const { date, entries } = dayObj;
    
+ const todayKey = new Date().toISOString().split("T")[0];
+ const isToday = dayObj.date === todayKey;
+
  const midday =
   entries.find(e => e.weather?.[0]) ||
   entries.find(e => e.dt_txt.includes("12:00:00")) ||
@@ -225,6 +239,11 @@ daysArray.forEach((dayObj, i) => {
 if (!iconEl) return;
   const tempEl = document.querySelectorAll(".day-temp")[i];
   const nameEl = document.querySelectorAll(".day-name")[i];
+  const dayCard = document.querySelectorAll(".day")[i];
+
+if (isToday && dayCard) {
+  dayCard.classList.add("today");
+}
 
   nameEl.textContent = new Date(date)
     .toLocaleDateString("en-US", { weekday: "short" })
